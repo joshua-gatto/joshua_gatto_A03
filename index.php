@@ -68,11 +68,13 @@
                      include_once("connection.php");
                      $student_ID = $_SESSION['user']['student_ID'];
                      $text = mysqli_real_escape_string($conn, $_POST['text']);
-                     $postQuery = "INSERT INTO users_posts(student_ID, new_post) VALUES ('$student_ID', '$text');";
-                     if(mysqli_query($conn, $postQuery)){
-                        $postQuery = "SELECT post_ID, new_post FROM users_posts WHERE student_ID='$student_ID' ORDER BY post_ID DESC LIMIT 5";
-                        $posts = mysqli_query($conn, $postQuery);
-                        if(mysqli_num_rows($posts) > 0){
+                     $postQuery = $conn->prepare("INSERT INTO users_posts(student_ID, new_post) VALUES (?, ?);");
+                     $postQuery->bind_param("s", $student_ID, $text);
+                     if($postQuery->execute()){
+                        $postQuery = $conn->prepare("SELECT post_ID, new_post FROM users_posts WHERE student_ID=? ORDER BY post_ID DESC LIMIT 5");
+                        $postQuery->bind_param("s", $student_ID);
+                        $postQuery->execute($conn, $postQuery);
+                        if($postQuery->num_rows > 0){
                            foreach($posts as $post){
                               echo
                               "<div class='postDiv'> <!-- Replace with Tables if time permits -->
