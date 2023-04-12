@@ -1,6 +1,6 @@
 # Changes for Assignment 3
 ## General
-[] change SQL to prepared statements
+[x] change SQL to prepared statements
 [] if user is not logged in and tries to access any other page, redirect to login.php
 
 ## index.php

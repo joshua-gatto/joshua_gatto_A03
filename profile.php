@@ -32,17 +32,21 @@
             $avatar = NULL;
          }
          //form first query
-         $infoQuery = "INSERT INTO users_info(student_email, first_name, last_name, DOB) VALUES ('$email', '$first_name', '$last_name', '$dob');";
+         $infoQuery = $conn->prepare("INSERT INTO users_info(student_email, first_name, last_name, DOB) VALUES (?, ?, ?, ?);");
+         $infoQuery->bind_param("s", $email, $first_name, $last_name, $dob);
          //submit first query
-         if (mysqli_query($conn, $infoQuery) === TRUE) {
+         if ($infoQuery->execute() === TRUE) {
                //get generated ID
                $student_ID = mysqli_insert_id($conn);
                //generate remaining queries
-               $programQuery = "INSERT INTO users_program(student_ID, Program) VALUES ('$student_ID', '$program');";
-               $addressQuery = "INSERT INTO users_address(student_ID, street_number, street_name, city, provence, postal_code) VALUES ('$student_ID', '$street_num', '$street_name', '$city', '$provence', '$postal_code');";
-               $avatarQuery = "INSERT INTO users_avatar(student_ID, avatar) VALUES('$student_ID', '$avatar');";
+               $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES ('?', '?');");
+               $programQuery->bind_param("s", $student_ID, $program);
+               $addressQuery = $conn->prepare("INSERT INTO users_address(student_ID, street_number, street_name, city, provence, postal_code) VALUES (?, ?, ?, ?, ?, ?);");
+               $addressQuery->bind_param("s", $student_ID, $street_num, $street_name, $city, $provence, $postal_code);
+               $avatarQuery = $conn->prepare("INSERT INTO users_avatar(student_ID, avatar) VALUES(?, ?);");
+               $avatarQuery->bind_param("s", $student_ID, $avatar);
                //submit remaining queries
-               if(mysqli_query($conn, $programQuery) === TRUE and mysqli_query($conn, $addressQuery) === TRUE and mysqli_query($conn, $avatarQuery) === TRUE){
+               if($programQuery->execute() === TRUE and $addressQuery->execute() === TRUE and $avatarQuery->execute() === TRUE){
                   //print results
                   $_SESSION["user"] = 
                   array(
