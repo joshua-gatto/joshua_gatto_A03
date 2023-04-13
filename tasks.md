@@ -2,6 +2,8 @@
 ## General
 [x] change SQL to prepared statements  
 [x] if user is not logged in and tries to access any other page, redirect to login.php  
+[x] hash stored passwords (password_hash(<passwrd>, <PASSWORD_BCRYPT>))
+[x] use password_verify(<password>, <hashword>)
 
 ## index.php
 [x] if user is logged in, show last 10 posts of user  
@@ -15,7 +17,7 @@
 [x] add 'password' and 'confirm password' fields (error if they do not match)  
 [x] store password in a table named 'users_passwords'  
 [] check user input with JS before sending to server  
-[] check if new user's email exists in the database (error if it does)  
+[x] check if new user's email exists in the database (error if it does)  
 
 ## navigation menu
 [x] if user is logged in, they will see index, profile and logout  

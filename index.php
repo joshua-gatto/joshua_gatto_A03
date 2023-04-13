@@ -114,8 +114,7 @@
                      //get user data
                      $student_ID = $_SESSION['user']['student_ID'];
                      //prepare next statement
-                     $post_query = $conn->prepare("SELECT post_ID, new_post FROM users_posts WHERE student_ID=? ORDER BY post_ID DESC LIMIT 10");
-                     $post_query->bind_param("s", $student_ID);
+                     $post_query = $conn->prepare("SELECT post_ID, new_post FROM users_posts ORDER BY post_ID DESC LIMIT 10;");
                      if($post_query->execute()){
                         $result = $post_query->get_result();
                         if($result->num_rows > 0){

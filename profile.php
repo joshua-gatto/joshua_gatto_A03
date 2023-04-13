@@ -43,8 +43,9 @@
                //generate remaining queries
                if(isset($password) && isset($confirm_password)){
                   assert($password == $confirm_password);
-                  $password_query = $conn->prepare("INSERT INTO users_passwords(student_ID, password) VALUES (?, ?)");
-                  $password_query->bind_param("ss", $student_ID, $password);
+                  $hashword = password_hash($password, PASSWORD_BCRYPT);
+                  $password_query = $conn->prepare("INSERT INTO users_passwords(student_ID, password) VALUES (?, ?);");
+                  $password_query->bind_param("ss", $student_ID, $hashword);
                   $password_query->execute();
                }
                $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES (?, ?);");

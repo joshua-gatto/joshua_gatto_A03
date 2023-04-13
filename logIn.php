@@ -76,16 +76,16 @@
                             $email = mysqli_real_escape_string($conn, $_POST["email"]);
                             $password = mysqli_real_escape_string($conn, $_POST["password"]);
                             //get student_IDs that match associated password
-                            $password_query = $conn->prepare("SELECT student_ID FROM users_passwords WHERE password=?;");
-                            $password_query->bind_param("s", $password);
+                            $password_query = $conn->prepare("SELECT student_ID, password FROM users_passwords;");
                             if($password_query->execute()){
-                                $password_query->store_result();
-                                $password_query->bind_result($student_ID); //bind results to student_ID
-                                if($password_query->num_rows > 0){
-                                    while ($password_query->fetch()) { //iterate through all student_IDs where password matches
+                                $password_query->bind_result($student_ID, $hashword); //bind results to student_ID
+                                $result = $password_query->get_result();
+                                while($row =  $result->fetch_assoc()){
+                                    if(password_verify($password, $row["password"])){ //check passwords are the same
+                                        echo $row["password"];
                                         //get student_email (and other user_info) where student_ID matches
                                         $email_query = $conn->prepare("SELECT student_email, first_name, last_name, dob FROM users_info WHERE student_ID=?;");
-                                        $email_query->bind_param("s", $student_ID);
+                                        $email_query->bind_param("s", $row["student_ID"]);
                                         if($email_query->execute()){
                                             $email_query->store_result();
                                             $email_query->bind_result($student_email, $first_name, $last_name, $dob);
@@ -127,15 +127,11 @@
                                                         }
                                                     }
                                                 }
-                                            }else{
-                                                echo 'Error: Invalid email or password. Click <a href="./register.php">here</a> to register';
                                             }
                                         }
                                     }
-                                }else{
-                                    echo 'Error: Invalid email or password. Click <a href="./register.php">here</a> to register';
                                 }
-
+                                echo 'Error: Invalid email or password. Click <a href="./register.php">here</a> to register';
                             }
                         }
                         ?>
