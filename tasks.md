@@ -33,7 +33,7 @@
 [x] notify user if they do not have an account (prompt to visit register.php)  
 
 ## users_permissions
-[] create a table with two columns, student_ID (primary key, integer length 10) and account_type (integer of length 1) (default 1)  
+[x] create a table with two columns, student_ID (primary key, integer length 10) and account_type (integer of length 1) (default 1)  
 
 ## user_list.php
 [] display student id, first name, last name, email and program of every user  
