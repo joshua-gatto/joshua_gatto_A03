@@ -77,12 +77,9 @@
                   <section>
                   <?php
                   if(!isset($_SESSION["user"])){
-                     echo "No user logged in";
-                  }else{
-                     echo "logged in as ". $_SESSION["user"]["student_ID"] .", ". $_SESSION["user"]["first_name"];
-                  }
-
-                  if(isset($_POST["post_submit"]) && isset($_SESSION["user"])){
+                     header("Location: ./login.php");
+                     exit();
+                  }elseif(isset($_POST["post_submit"]) && isset($_SESSION["user"])){
                      include_once("connection.php");
                      //get user data
                      $student_ID = $_SESSION['user']['student_ID'];
@@ -112,6 +109,29 @@
                         echo 'Error persisting user data, Error Code 1' . $conn->connect_error;
                      }
                   $conn->close();
+                  }elseif(isset($_SESSION["user"])){
+                     include_once("connection.php");
+                     //get user data
+                     $student_ID = $_SESSION['user']['student_ID'];
+                     //prepare next statement
+                     $post_query = $conn->prepare("SELECT post_ID, new_post FROM users_posts WHERE student_ID=? ORDER BY post_ID DESC LIMIT 10");
+                     $post_query->bind_param("s", $student_ID);
+                     if($post_query->execute()){
+                        $result = $post_query->get_result();
+                        if($result->num_rows > 0){
+                           while($post = $result->fetch_assoc()){
+                              echo
+                              "<div class='postDiv'> <!-- Replace with Tables if time permits -->
+                                 <details open>
+                                    <Summary>Post ". $post["post_ID"] ."</Summary>
+                                    ". $post["new_post"] ."
+                                 </details>
+                              </div>";
+                           }
+                        }
+                     }
+                  }else{
+                     echo "logged in as ". $_SESSION["user"]["student_ID"] .", ". $_SESSION["user"]["first_name"];
                   }
                   ?>
                      <div class="postDiv"> <!-- Replace with Tables if time permits -->

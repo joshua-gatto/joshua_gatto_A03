@@ -4,8 +4,8 @@
 [] if user is not logged in and tries to access any other page, redirect to login.php  
 
 ## index.php
-[] if user is logged in, show last 10 posts of user  
-[] if user is not logged in, redirect to log in page  
+[x] if user is logged in, show last 10 posts of user  
+[x] if user is not logged in, redirect to log in page  
 
 ## profile.php
 [x] if user is logged in, retrieve and display user info  
