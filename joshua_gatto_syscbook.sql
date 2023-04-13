@@ -45,6 +45,12 @@ CREATE TABLE IF NOT EXISTS users_passwords (
   FOREIGN KEY (student_ID) REFERENCES users_info(student_ID)
 );
 
+CREATE TABLE IF NOT EXISTS users_permissions (
+  student_ID INT(10) PRIMARY KEY,
+  account_type INT(1) DEFAULT 1,
+  FOREIGN KEY (student_ID) REFERENCES users_info(student_ID)
+);
+
 --delete all script
 USE joshua_gatto_syscbook;
 SET FOREIGN_KEY_CHECKS = 0;

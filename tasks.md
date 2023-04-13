@@ -2,6 +2,8 @@
 ## General
 [x] change SQL to prepared statements  
 [x] if user is not logged in and tries to access any other page, redirect to login.php  
+[x] hash stored passwords (password_hash(<passwrd>, <PASSWORD_BCRYPT>))
+[x] use password_verify(<password>, <hashword>)
 
 ## index.php
 [x] if user is logged in, show last 10 posts of user  
@@ -31,8 +33,8 @@
 [x] notify user if they do not have an account (prompt to visit register.php)  
 
 ## users_permissions
-[] create a table with two columns, student_ID (primary key, integer length 10) and account_type (integer of length 1) (default 1)  
+[x] create a table with two columns, student_ID (primary key, integer length 10) and account_type (integer of length 1) (default 1)  
 
 ## user_list.php
-[] display student id, first name, last name, email and program of every user  
-[] only admins will have access  
+[x] display student id, first name, last name, email and program of every user  
+[x] only admins will have access  

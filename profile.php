@@ -45,24 +45,36 @@
          //submit first query
          if ($infoQuery->execute() === TRUE) {
                //get generated ID
-               $student_ID = mysqli_insert_id($conn);
+               $student_ID = $conn->insert_id;
                //generate remaining queries
                if(isset($password) && isset($confirm_password)){
                   assert($password == $confirm_password);
-                  $password_query = $conn->prepare("INSERT INTO users_passwords(student_ID, password) VALUES (?, ?)");
-                  $password_query->bind_param("ss", $student_ID, $password);
+                  $hashword = password_hash($password, PASSWORD_BCRYPT);
+                  $password_query = $conn->prepare("INSERT INTO users_passwords(student_ID, password) VALUES (?, ?);");
+                  $password_query->bind_param("ss", $student_ID, $hashword);
                   $password_query->execute();
                }
                #change to execute sequentially and check reference to completeness
                $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES (?, ?);");
                $programQuery->bind_param("ss", $student_ID, $program);
+               $progs = $programQuery->execute();
                $addressQuery = $conn->prepare("INSERT INTO users_address(student_ID, street_number, street_name, city, provence, postal_code) VALUES (?, ?, ?, ?, ?, ?);");
                $addressQuery->bind_param("ssssss", $student_ID, $street_num, $street_name, $city, $provence, $postal_code);
+               $adrs = $addressQuery->execute();
                $avatarQuery = $conn->prepare("INSERT INTO users_avatar(student_ID, avatar) VALUES(?, ?);");
                $avatarQuery->bind_param("ss", $student_ID, $avatar);
+               $avs = $avatarQuery->execute();
+               $permissionQuery = $conn->prepare("INSERT INTO users_permissions(student_ID) VALUES (?);");
+               $permissionQuery->bind_param("s", $student_ID);
+               $pers = $permissionQuery->execute();
                //submit remaining queries
-               if($programQuery->execute() === TRUE and $addressQuery->execute() === TRUE and $avatarQuery->execute() === TRUE){
-                  //print results
+               if($progs === TRUE and $adrs === TRUE and $avs === TRUE and $pers === TRUE){
+                  $adminQuery = $conn->prepare("SELECT account_type FROM users_permissions WHERE student_ID=?;");
+                  $adminQuery->bind_param("s", $student_ID);
+                  $adminQuery->execute();
+                  $result = $adminQuery->get_result();
+                  $row = $result->fetch_assoc();
+                  echo $account_type;
                   $_SESSION["user"] = 
                   array(
                      "student_ID" => $student_ID,
@@ -77,6 +89,7 @@
                      "provence" => $provence,
                      "postal_code" => $postal_code,
                      "avatar" => $avatar,
+                     "account_type" => $row["account_type"]
                   );
                }else{
                   echo "Error persisting user data, Error Code 1" . $conn->connect_error;
@@ -89,7 +102,7 @@
          header("Location: ./login.php");
          exit();
       }else{
-         echo "logged in as ". $_SESSION["user"]["student_ID"] .", ". $_SESSION["user"]["first_name"];
+         echo "logged in as ". $_SESSION["user"]["student_ID"] .", ". $_SESSION["user"]["first_name"]. " with permission ". $_SESSION["user"]["account_type"];
       }
    ?>
 </head>
@@ -119,6 +132,13 @@
                                  <td><li><a href="./logOut.php">Log Out</a></li></td>
                               </tr>
                            ';
+                           if($_SESSION["user"]["account_type"] == 0){
+                              echo '
+                              <tr>
+                                 <td><li><a href="./user_list.php">User List</a></li></td>
+                              </tr>
+                           ';
+                           }
                            } else {
                            // Show these links if the user is not logged in
                            echo '
