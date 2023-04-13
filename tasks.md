@@ -19,7 +19,7 @@
 
 ## navigation menu
 [] if user is logged in, they will see index, profile and logout  
-[] if a user is not logged in, they will see index, login and register  
+[x] if a user is not logged in, they will see index, login and register  
 [] an admin will see index, profile, logout and userlist  
 
 ## users_passwords
