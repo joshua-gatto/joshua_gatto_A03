@@ -7,7 +7,7 @@
    <link rel="stylesheet" href="assets/css/style.css" />
    <?php
       session_start();
-      if((isset($_POST["profile_submit"]) || isset($_POST["register_submit"])) && isset($_SESSION["user"])){
+      if(isset($_POST["profile_submit"]) || isset($_POST["register_submit"])){
          include_once("connection.php");
          //common user data
          $first_name = mysqli_real_escape_string($conn, $_POST["first_name"]);
@@ -24,6 +24,8 @@
             $postal_code = mysqli_real_escape_string($conn, $_POST["postal_code"]);
             $avatar = mysqli_real_escape_string($conn, $_POST["avatar"]);
          }else{
+            $password = mysqli_real_escape_string($conn, $_POST["password"]);
+            $confirm_password = mysqli_real_escape_string($conn, $_POST["confirm_password"]);
             $street_num = 0;
             $street_name = NULL;
             $city = NULL;
@@ -33,18 +35,24 @@
          }
          //form first query
          $infoQuery = $conn->prepare("INSERT INTO users_info(student_email, first_name, last_name, DOB) VALUES (?, ?, ?, ?);");
-         $infoQuery->bind_param("s", $email, $first_name, $last_name, $dob);
+         $infoQuery->bind_param("ssss", $email, $first_name, $last_name, $dob);
          //submit first query
          if ($infoQuery->execute() === TRUE) {
                //get generated ID
                $student_ID = mysqli_insert_id($conn);
                //generate remaining queries
-               $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES ('?', '?');");
-               $programQuery->bind_param("s", $student_ID, $program);
+               if(isset($password) && isset($confirm_password)){
+                  assert($password == $confirm_password);
+                  $password_query = $conn->prepare("INSERT INTO users_passwords(student_ID, password) VALUES (?, ?)");
+                  $password_query->bind_param("ss", $student_ID, $password);
+                  $password_query->execute();
+               }
+               $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES (?, ?);");
+               $programQuery->bind_param("ss", $student_ID, $program);
                $addressQuery = $conn->prepare("INSERT INTO users_address(student_ID, street_number, street_name, city, provence, postal_code) VALUES (?, ?, ?, ?, ?, ?);");
-               $addressQuery->bind_param("s", $student_ID, $street_num, $street_name, $city, $provence, $postal_code);
+               $addressQuery->bind_param("ssssss", $student_ID, $street_num, $street_name, $city, $provence, $postal_code);
                $avatarQuery = $conn->prepare("INSERT INTO users_avatar(student_ID, avatar) VALUES(?, ?);");
-               $avatarQuery->bind_param("s", $student_ID, $avatar);
+               $avatarQuery->bind_param("ss", $student_ID, $avatar);
                //submit remaining queries
                if($programQuery->execute() === TRUE and $addressQuery->execute() === TRUE and $avatarQuery->execute() === TRUE){
                   //print results
@@ -89,18 +97,35 @@
                <nav>
                   <ul>
                      <table class="sideBar">
-                        <tr>
-                           <td><li><a href="./index.php">Home</a></li></td>
-                        </tr>
-                        <tr id="current">
-                           <td><li><a href="#">Profile</a></li></td>
-                        </tr>
-                        <tr>
-                           <td><li><a href="./register.php">Register</a></li></td>
-                        </tr>
-                        <tr>
-                           <td><li><a href="logOut.php">Log Out</a></li></td>
-                        </tr>
+                        <?php
+                           if(isset($_SESSION["user"])) {
+                           // Show these links if the user is logged in
+                           echo '
+                              <tr>
+                                 <td><li><a href="./index.php">Home</a></li></td>
+                              </tr>
+                              <tr id="current">
+                                 <td><li><a href="#">Profile</a></li></td>
+                              </tr>
+                              <tr>
+                                 <td><li><a href="./logOut.php">Log Out</a></li></td>
+                              </tr>
+                           ';
+                           } else {
+                           // Show these links if the user is not logged in
+                           echo '
+                              <tr>
+                                 <td><li><a href="./login.php">Home</a></li></td>
+                              </tr>
+                              <tr>
+                                 <td><li><a href="./login.php">Login</a></li></td>
+                              </tr>
+                              <tr>
+                                 <td><li><a href="./register.php">Register</a></li></td>
+                              </tr>
+                              ';
+                           }
+                           ?>
                      </table>
                   </ul>
                </nav>
