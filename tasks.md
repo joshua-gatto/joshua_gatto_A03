@@ -23,7 +23,7 @@
 [] an admin will see index, profile, logout and userlist  
 
 ## users_passwords
-[] create a table with two columns, student_ID (primary key, integer length 10) and password (VARCHAR length 255 characters)  
+[X] create a table with two columns, student_ID (primary key, integer length 10) and password (VARCHAR length 255 characters)  
 
 ## login.php
 [] when loggin in, check if email and password match  
