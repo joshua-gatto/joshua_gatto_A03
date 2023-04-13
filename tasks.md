@@ -22,7 +22,7 @@
 ## navigation menu
 [x] if user is logged in, they will see index, profile and logout  
 [x] if a user is not logged in, they will see index, login and register  
-[] an admin will see index, profile, logout and userlist  
+[x] an admin will see index, profile, logout and userlist  
 
 ## users_passwords
 [X] create a table with two columns, student_ID (primary key, integer length 10) and password (VARCHAR length 255 characters)  
