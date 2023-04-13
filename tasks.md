@@ -1,7 +1,7 @@
 # Changes for Assignment 3
 ## General
 [x] change SQL to prepared statements  
-[] if user is not logged in and tries to access any other page, redirect to login.php  
+[x] if user is not logged in and tries to access any other page, redirect to login.php  
 
 ## index.php
 [x] if user is logged in, show last 10 posts of user  

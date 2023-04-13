@@ -79,7 +79,8 @@
          }
          $conn->close();
       }elseif(!isset($_SESSION["user"])){
-         echo "No user logged in";
+         header("Location: ./login.php");
+         exit();
       }else{
          echo "logged in as ". $_SESSION["user"]["student_ID"] .", ". $_SESSION["user"]["first_name"];
       }
