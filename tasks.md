@@ -18,7 +18,7 @@
 [] check if new user's email exists in the database (error if it does)  
 
 ## navigation menu
-[] if user is logged in, they will see index, profile and logout  
+[x] if user is logged in, they will see index, profile and logout  
 [x] if a user is not logged in, they will see index, login and register  
 [] an admin will see index, profile, logout and userlist  
 
