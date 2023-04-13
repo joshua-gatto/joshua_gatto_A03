@@ -23,7 +23,7 @@
                                 </tr>
                                 <?php
                                     session_start();
-                                    if(isset($_SESSION["user"])) {
+                                    if(isset($_SESSION["user"]) && isset($_POST["login"])) {
                                     // Show these links if the user is logged in
                                     echo '
                                         <tr>
@@ -66,47 +66,74 @@
                             </fieldset>
                         </form>
                         <?php
-                            if(isset($_POST["login"])){
-                                include_once("connection.php");
-                                $email = mysqli_real_escape_string($conn, $_POST["email"]);
-                                $password = mysqli_real_escape_string($conn, $_POST["password"]);
-                                $query = $conn->prepare("
-                                SELECT *
-                                FROM users_info
-                                JOIN users_program ON users_info.student_ID = users_program.student_ID
-                                JOIN users_avatar ON users_info.student_ID = users_avatar.student_ID
-                                JOIN users_address ON users_info.student_ID = users_address.student_ID
-                                JOIN users_posts ON users_info.student_ID = users_posts.student_ID
-                                JOIN users_passwords ON users_info.student_ID = users_passwords.student_ID
-                                WHERE users_info.student_email=?
-                                AND users_passwords.password=?;
-                                ");
-                                $query->bind_param("ss", $password, $email);
-                                if($query->execute()){
-                                    if($query->num_rows == 1){
-                                        $row = $query->get_results()->fetch_assoc();
-                                        session_start();
-                                        $_SESSION["user"] = 
-                                        array(
-                                            "student_ID" => $row["student_ID"],
-                                            "student_email" => $row["email"],
-                                            "first_name" => $row["first_name"],
-                                            "last_name" => $row["last_name"],
-                                            "DOB" => $row["DOB"],
-                                            "program" => $row["program"],
-                                            "street_num" => $row["street_number"],
-                                            "street_name" => $row["street_name"],
-                                            "city" => $row["city"],
-                                            "provence" => $row["provence"],
-                                            "postal_code" => $row["postal_code"],
-                                            "avatar" => $row["avatar"],
-                                        );
-                                        echo "Logged in";
-                                    }else{
-                                        echo "Invalid email or password";
+                        if(isset($_POST["login"])){
+                            include_once("connection.php");
+                            //get user input
+                            $email = mysqli_real_escape_string($conn, $_POST["email"]);
+                            $password = mysqli_real_escape_string($conn, $_POST["password"]);
+                            //get student_IDs that match associated password
+                            $password_query = $conn->prepare("SELECT student_ID FROM users_passwords WHERE password=?;");
+                            $password_query->bind_param("s", $password);
+                            if($password_query->execute()){
+                                $password_query->store_result();
+                                $password_query->bind_result($student_ID); //bind results to student_ID
+                                if($password_query->num_rows > 0){
+                                    while ($password_query->fetch()) { //iterate through all student_IDs where password matches
+                                        //get student_email (and other user_info) where student_ID matches
+                                        $email_query = $conn->prepare("SELECT student_email, first_name, last_name, dob FROM users_info WHERE student_ID=?;");
+                                        $email_query->bind_param("s", $student_ID);
+                                        if($email_query->execute()){
+                                            $email_query->store_result();
+                                            $email_query->bind_result($student_email, $first_name, $last_name, $dob);
+                                            if($email_query->num_rows == 1){
+                                                while ($email_query->fetch()) {  //iterate through all student_email where student_ID matches (should only be one since student_ID is unique)
+                                                    if($email == $student_email){ //if emails match, restore session
+                                                        $address_query = $conn->prepare("SELECT street_name, street_number, city, provence, postal_code FROM users_address WHERE student_ID=?;");
+                                                        $address_query->bind_param("s", $student_ID);
+                                                        $adrs = $address_query->execute();
+                                                        $address_query->store_result();
+                                                        $program_query = $conn->prepare("SELECT program FROM users_program WHERE student_ID=?;");
+                                                        $program_query->bind_param("s", $student_ID);
+                                                        $progs = $program_query->execute();
+                                                        $program_query->store_result();
+                                                        $avatar_query = $conn->prepare("SELECT avatar FROM users_avatar WHERE student_ID=?;");
+                                                        $avatar_query->bind_param("s", $student_ID);
+                                                        $avs = $avatar_query->execute();
+                                                        if($adrs && $progs && $avs){
+                                                            $address_query->bind_result($street_name, $street_num, $city, $provence, $postal_code);
+                                                            $program_query->bind_result($program);
+                                                            $avatar_query->bind_result($avatar);
+                                                            $_SESSION["user"] = 
+                                                            array(
+                                                                "student_ID" => $student_ID,
+                                                                "student_email" => $email,
+                                                                "first_name" => $first_name,
+                                                                "last_name" => $last_name,
+                                                                "DOB" => $dob,
+                                                                "program" => $program,
+                                                                "street_num" => $street_num,
+                                                                "street_name" => $street_name,
+                                                                "city" => $city,
+                                                                "provence" => $provence,
+                                                                "postal_code" => $postal_code,
+                                                                "avatar" => $avatar,
+                                                            );
+                                                            header("Location: ./index.php");
+                                                            exit();
+                                                        }
+                                                    }
+                                                }
+                                            }else{
+                                                echo 'Error: Invalid email or password. Click <a href="./register.php">here</a> to register';
+                                            }
+                                        }
                                     }
+                                }else{
+                                    echo 'Error: Invalid email or password. Click <a href="./register.php">here</a> to register';
                                 }
+
                             }
+                        }
                         ?>
                     </div>
                 </td>
