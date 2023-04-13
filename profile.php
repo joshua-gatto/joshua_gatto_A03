@@ -32,6 +32,12 @@
             $provence = NULL;
             $postal_code = NULL;
             $avatar = NULL;
+
+            $duplicate_email_query = $conn->prepare("SELECT student_email FROM users_info WHERE student_email=?;");
+            $duplicate_email_query->bind_param("s", $email);
+            $duplicate_email_query->execute();
+            $rows = $duplicate_email_query->get_result();
+            assert($rows->num_rows == 0);
          }
          //form first query
          $infoQuery = $conn->prepare("INSERT INTO users_info(student_email, first_name, last_name, DOB) VALUES (?, ?, ?, ?);");
@@ -47,6 +53,7 @@
                   $password_query->bind_param("ss", $student_ID, $password);
                   $password_query->execute();
                }
+               #change to execute sequentially and check reference to completeness
                $programQuery = $conn->prepare("INSERT INTO users_program(student_ID, Program) VALUES (?, ?);");
                $programQuery->bind_param("ss", $student_ID, $program);
                $addressQuery = $conn->prepare("INSERT INTO users_address(student_ID, street_number, street_name, city, provence, postal_code) VALUES (?, ?, ?, ?, ?, ?);");

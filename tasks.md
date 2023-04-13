@@ -15,7 +15,7 @@
 [x] add 'password' and 'confirm password' fields (error if they do not match)  
 [x] store password in a table named 'users_passwords'  
 [] check user input with JS before sending to server  
-[] check if new user's email exists in the database (error if it does)  
+[x] check if new user's email exists in the database (error if it does)  
 
 ## navigation menu
 [x] if user is logged in, they will see index, profile and logout  
