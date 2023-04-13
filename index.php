@@ -80,23 +80,28 @@
 
                   if(isset($_POST["post_submit"]) && isset($_SESSION["user"])){
                      include_once("connection.php");
+                     //get user data
                      $student_ID = $_SESSION['user']['student_ID'];
                      $text = mysqli_real_escape_string($conn, $_POST['text']);
-                     $postQuery = $conn->prepare("INSERT INTO users_posts(student_ID, new_post) VALUES (?, ?);");
-                     $postQuery->bind_param("s", $student_ID, $text);
-                     if($postQuery->execute()){
-                        $postQuery = $conn->prepare("SELECT post_ID, new_post FROM users_posts WHERE student_ID=? ORDER BY post_ID DESC LIMIT 5");
-                        $postQuery->bind_param("s", $student_ID);
-                        $postQuery->execute($conn, $postQuery);
-                        if($postQuery->num_rows > 0){
-                           foreach($posts as $post){
-                              echo
-                              "<div class='postDiv'> <!-- Replace with Tables if time permits -->
-                              <details open>
-                                 <Summary>Post ". $post["post_ID"] ."</Summary>
-                                 ". $post["new_post"] ."
-                              </details>
-                           </div>";
+                     //prepare statements
+                     $post_query = $conn->prepare("INSERT INTO users_posts(student_ID, new_post) VALUES (?, ?);");
+                     $post_query->bind_param("ss", $student_ID, $text);
+                     if($post_query->execute()){
+                        //prepare next statement
+                        $post_query = $conn->prepare("SELECT post_ID, new_post FROM users_posts WHERE student_ID=? ORDER BY post_ID DESC LIMIT 5");
+                        $post_query->bind_param("s", $student_ID);
+                        if($post_query->execute()){
+                           $result = $post_query->get_result();
+                           if($result->num_rows > 0){
+                              while($post = $result->fetch_assoc()){
+                                 echo
+                                 "<div class='postDiv'> <!-- Replace with Tables if time permits -->
+                                    <details open>
+                                       <Summary>Post ". $post["post_ID"] ."</Summary>
+                                       ". $post["new_post"] ."
+                                    </details>
+                                 </div>";
+                              }
                            }
                         }
                      }else{

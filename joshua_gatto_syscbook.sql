@@ -39,14 +39,14 @@ CREATE TABLE IF NOT EXISTS users_posts (
     FOREIGN KEY (student_ID) REFERENCES users_info(student_ID)
 );
 
-CREATE TABLE IF NOT EXISTS users_session (
-    student_ID INT(10) PRIMARY KEY,
-    session_ID INT,
-    FOREIGN KEY (student_ID) REFERENCES users_info(student_ID)
+CREATE TABLE IF NOT EXISTS users_passwords (
+  student_ID INT(10) PRIMARY KEY,
+  password VARCHAR(255),
+  FOREIGN KEY (student_ID) REFERENCES users_info(student_ID)
 );
 
 --delete all script
-USE joshua_gatto_syscbook
+USE joshua_gatto_syscbook;
 SET FOREIGN_KEY_CHECKS = 0;
 
 TRUNCATE TABLE users_program;
@@ -54,6 +54,7 @@ TRUNCATE TABLE users_avatar;
 TRUNCATE TABLE users_address;
 TRUNCATE TABLE users_posts;
 TRUNCATE TABLE users_info;
+TRUNCATE TABLE users_passwords;
 
 SET FOREIGN_KEY_CHECKS = 1;
 ALTER TABLE users_info AUTO_INCREMENT=100100;

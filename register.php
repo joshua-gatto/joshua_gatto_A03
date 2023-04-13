@@ -97,6 +97,14 @@
                            </tr>
                            <tr>
                               <td>
+                                 <label for="password">Password: </label>
+                                 <input type="text" name="password" require>
+                                 <label for="confirm_password">Confirm Password: </label>
+                                 <input type="text" name="confirm_password" require>
+                              </td>
+                           </tr>
+                           <tr>
+                              <td>
                                  <td class="buttons"><button type='submit' name='register_submit' value='register_submit' formmethod='post'>Submit</button></td>
                                  <td class="buttons"><button type="reset" formaction="reset.css">Reset</button></td>
                               </td>
