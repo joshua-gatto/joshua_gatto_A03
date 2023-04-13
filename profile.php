@@ -67,6 +67,7 @@
                   $adminQuery->execute();
                   $result = $adminQuery->get_result();
                   $row = $result->fetch_assoc();
+                  echo $account_type;
                   $_SESSION["user"] = 
                   array(
                      "student_ID" => $student_ID,
@@ -124,6 +125,13 @@
                                  <td><li><a href="./logOut.php">Log Out</a></li></td>
                               </tr>
                            ';
+                           if($_SESSION["user"]["account_type"] == 0){
+                              echo '
+                              <tr>
+                                 <td><li><a href="./user_list.php">User List</a></li></td>
+                              </tr>
+                           ';
+                           }
                            } else {
                            // Show these links if the user is not logged in
                            echo '

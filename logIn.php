@@ -18,7 +18,6 @@
                     <nav>
                         <table class="sideBar">
                             <ul>
-
                                 <?php
                                     session_start();
                                     if(isset($_SESSION["user"]) && isset($_POST["login"])) {
@@ -34,6 +33,13 @@
                                             <td><li><a href="./logOut.php">Log Out</a></li></td>
                                         </tr>
                                     ';
+                                    if($_SESSION["user"]["account_type"] == 0){
+                                        echo '
+                                        <tr>
+                                            <td><li><a href="./user_list.php">User List</a></li></td>
+                                        </tr>
+                                    ';
+                                    }
                                     } else {
                                     // Show these links if the user is not logged in
                                     echo '
@@ -82,7 +88,6 @@
                                 $result = $password_query->get_result();
                                 while($row =  $result->fetch_assoc()){
                                     if(password_verify($password, $row["password"])){ //check passwords are the same
-                                        echo $row["password"];
                                         //get student_email (and other user_info) where student_ID matches
                                         $email_query = $conn->prepare("SELECT student_email, first_name, last_name, dob FROM users_info WHERE student_ID=?;");
                                         $email_query->bind_param("s", $row["student_ID"]);
@@ -103,10 +108,17 @@
                                                         $avatar_query = $conn->prepare("SELECT avatar FROM users_avatar WHERE student_ID=?;");
                                                         $avatar_query->bind_param("s", $student_ID);
                                                         $avs = $avatar_query->execute();
+                                                        $avatar_query->store_result();
                                                         if($adrs && $progs && $avs){
                                                             $address_query->bind_result($street_name, $street_num, $city, $provence, $postal_code);
                                                             $program_query->bind_result($program);
                                                             $avatar_query->bind_result($avatar);
+                                                            $adminQuery = $conn->prepare("SELECT account_type FROM users_permissions WHERE student_ID=?;");
+                                                            $adminQuery->bind_param("s", $student_ID);
+                                                            $adminQuery->execute();
+                                                            $adminQuery->store_result();
+                                                            $adminQuery->bind_result($account_type);
+                                                            echo $account_type;
                                                             $_SESSION["user"] = 
                                                             array(
                                                                 "student_ID" => $student_ID,
@@ -121,6 +133,7 @@
                                                                 "provence" => $provence,
                                                                 "postal_code" => $postal_code,
                                                                 "avatar" => $avatar,
+                                                                "account_type" =>  $row["account_type"]
                                                             );
                                                             header("Location: ./index.php");
                                                             exit();

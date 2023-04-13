@@ -34,6 +34,13 @@
                                  <td><li><a href="./logOut.php">Log Out</a></li></td>
                               </tr>
                            ';
+                           if($_SESSION["user"]["account_type"] == 0){
+                              echo '
+                              <tr>
+                                 <td><li><a href="./user_list.php">User List</a></li></td>
+                              </tr>
+                           ';
+                           }
                            } else {
                            // Show these links if the user is not logged in
                            echo '

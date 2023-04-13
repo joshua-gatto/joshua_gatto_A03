@@ -36,5 +36,5 @@
 [x] create a table with two columns, student_ID (primary key, integer length 10) and account_type (integer of length 1) (default 1)  
 
 ## user_list.php
-[] display student id, first name, last name, email and program of every user  
-[] only admins will have access  
+[x] display student id, first name, last name, email and program of every user  
+[x] only admins will have access  
