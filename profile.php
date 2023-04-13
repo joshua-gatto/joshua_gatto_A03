@@ -97,13 +97,13 @@
                <nav>
                   <ul>
                      <table class="sideBar">
-                        <tr>
-                           <td><li><a href="./index.php">Home</a></li></td>
-                        </tr>
                         <?php
                            if(isset($_SESSION["user"])) {
                            // Show these links if the user is logged in
                            echo '
+                              <tr>
+                                 <td><li><a href="./index.php">Home</a></li></td>
+                              </tr>
                               <tr id="current">
                                  <td><li><a href="#">Profile</a></li></td>
                               </tr>
@@ -114,6 +114,9 @@
                            } else {
                            // Show these links if the user is not logged in
                            echo '
+                              <tr>
+                                 <td><li><a href="./login.php">Home</a></li></td>
+                              </tr>
                               <tr>
                                  <td><li><a href="./login.php">Login</a></li></td>
                               </tr>

@@ -8,8 +8,8 @@
 [] if user is not logged in, redirect to log in page  
 
 ## profile.php
-[] if user is logged in, retrieve and display user info  
-[] if user is not logged in, redirect to log in page  
+[x] if user is logged in, retrieve and display user info  
+[x] if user is not logged in, redirect to log in page  
 
 ## register.php
 [x] add 'password' and 'confirm password' fields (error if they do not match)  
